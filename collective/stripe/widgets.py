@@ -1,7 +1,7 @@
 from zope.component import adapter, getMultiAdapter
 from zope.interface import implementer, implements, implementsOnly
 
-from z3c.form.interfaces import IFieldWidget, IFormLayer, IDataManager, NOVALUE
+from z3c.form.interfaces import IField, IFieldWidget, IFormLayer, NOVALUE
 from z3c.form.widget import FieldWidget
 from z3c.form.browser import text
 
@@ -11,7 +11,7 @@ from zope.publisher.interfaces import IPublishTraverse, NotFound
 class StripeTokenWidget(text.TextWidget):
     """A widget for a named file object
     """
-    implementsOnly(INamedFileWidget)
+    implementsOnly(IFieldWidget)
 
     klass = u'stripe-token-widget'
     value = None # don't default to a string

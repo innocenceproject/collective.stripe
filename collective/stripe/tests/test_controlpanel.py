@@ -2,6 +2,7 @@ import transaction
 import unittest2 as unittest
 from zope.component import getSiteManager
 from plone.app.testing import TEST_USER_NAME, TEST_USER_PASSWORD
+from plone.app.testing import SITE_OWNER_NAME, SITE_OWNER_PASSWORD
 from plone.testing.z2 import Browser
 from collective.stripe.utils import get_settings
 from collective.stripe.testing import FUNCTIONAL_TESTING
@@ -30,7 +31,7 @@ class TemplateFunctionalTest(unittest.TestCase):
         # Now as an admin user, go through the steps in the browser
         browser = Browser(portal)
         browser.handleErrors = False
-        browser.addHeader('Authorization', 'Basic %s:%s' % (TEST_USER_NAME, TEST_USER_PASSWORD,))
+        browser.addHeader('Authorization', 'Basic %s:%s' % (SITE_OWNER_NAME, SITE_OWNER_PASSWORD,))
         browser.open('http://nohost/plone/plone_control_panel')
 
         settings_link = browser.getLink('Stripe Payment Processing')
@@ -38,19 +39,19 @@ class TemplateFunctionalTest(unittest.TestCase):
         self.assertEqual('http://nohost/plone/@@stripe-settings', browser.url)
         
         # Set the values in the control panel
-        browser.getControl(name='form.widgets.mode').value = "test"
+        browser.getControl(name='form.widgets.mode:list').value = ["test",]
         browser.getControl(name='form.widgets.live_secret_key').value = "1234567890"
         browser.getControl(name='form.widgets.live_publishable_key').value = "9876543210"
         browser.getControl(name='form.widgets.test_secret_key').value = "qwertyuiop"
         browser.getControl(name='form.widgets.test_publishable_key').value = "poiuytrewq"
         browser.getControl(name='form.buttons.save').click()
-        self.assertEqual("http://nohost/plone/@@stripe-settings", browser.url)
+        self.assertEqual("http://nohost/plone/plone_control_panel", browser.url)
 
         # Check that the settings were changed in the registry
         settings = get_settings()
-        assertEqual(settings.mode, "test")
-        assertEqual(settings.live_secret_key, "1234567890")
-        assertEqual(settings.live_publishable_key, "9876543210")
-        assertEqual(settings.test_secret_key, "qwertyuiop")
-        assertEqual(settings.test_publishable_key, "poiuytrewq")
+        self.assertEqual(settings.mode, "test")
+        self.assertEqual(settings.live_secret_key, "1234567890")
+        self.assertEqual(settings.live_publishable_key, "9876543210")
+        self.assertEqual(settings.test_secret_key, "qwertyuiop")
+        self.assertEqual(settings.test_publishable_key, "poiuytrewq")
 

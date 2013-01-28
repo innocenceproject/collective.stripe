@@ -24,9 +24,14 @@ setup(name='collective.stripe',
       install_requires=[
           'setuptools',
           'stripe',
-          'grok',
+          'five.grok',
           # -*- Extra requirements: -*-
       ],
+      extras_require = {
+          'test': [
+              'plone.app.testing',
+          ]
+      },
       entry_points="""
       # -*- Entry points: -*-
       [z3c.autoinclude.plugin]
