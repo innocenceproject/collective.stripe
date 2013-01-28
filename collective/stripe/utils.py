@@ -33,12 +33,14 @@ class IStripeUtility(Interface):
 class StripeUtility(object):
     grok.implements(IStripeUtility)
 
-    def get_stripe_api(self):
-        settings = get_settings()
-        if settings.mode == "live":
-            stripe.api_key = settings.live_secret_key
+    def get_stripe_api(self, context=None):
+        if context is not None:
+            mode = self.get_mode_for_context
         else:
-            stripe.api_key = settings.test_secret_key
+            settings = get_settings()
+            mode = settings.mode
+
+        stripe.api_key = getattr(settings, '%s_secret_key' % mode)
         return stripe
 
     def get_mode_for_context(self, context):
@@ -46,7 +48,7 @@ class StripeUtility(object):
             return context.get_stripe_mode()
         return get_settings().mode
 
-    def charge_card(self, token, amount, description, **kwargs):
+    def charge_card(self, token, amount, description, context=None, **kwargs):
         settings = get_settings()
         stripe = self.get_stripe_api()
         res = stripe.Charge.create(
@@ -58,7 +60,7 @@ class StripeUtility(object):
         )
         return res
 
-    def charge_customer(self, customer_id, amount, description, **kwargs):
+    def charge_customer(self, customer_id, amount, description, context=None, **kwargs):
         settings = get_settings()
         stripe = self.get_stripe_api()
         res = stripe.Charge.create(
@@ -70,7 +72,7 @@ class StripeUtility(object):
         )
         return res
 
-    def create_customer(self, token, description, **kwargs):
+    def create_customer(self, token, description, context=None, **kwargs):
         settings = get_settings()
         stripe = self.get_stripe_api()
         res = stripe.Customer.create(
@@ -80,7 +82,7 @@ class StripeUtility(object):
         )
         return res
 
-    def subscribe_customer(self, customer_id, plan, quantity, **kwargs):
+    def subscribe_customer(self, customer_id, plan, quantity, context=None, **kwargs):
         settings = get_settings()
         stripe = self.get_stripe_api()
         cu = stripe.Customer.retrieve(customer_id)
