@@ -5,6 +5,7 @@ from zope.site.hooks import getSite
 from zope.component import getUtility
 from plone.registry.interfaces import IRegistry
 from collective.stripe.controlpanel import IStripeSettings
+from collective.stripe.interfaces import IStripeModeChooser
 
 def get_settings():
     registry = getUtility(IRegistry)
@@ -40,8 +41,10 @@ class StripeUtility(object):
             stripe.api_key = settings.test_secret_key
         return stripe
 
-    def get_mode_for_context(self):
-        pass 
+    def get_mode_for_context(self, context):
+        if IStripeModeChooser.providedBy(context):
+            return context.get_stripe_mode()
+        return get_settings().mode
 
     def charge_card(self, token, amount, description, **kwargs):
         settings = get_settings()

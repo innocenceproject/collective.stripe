@@ -7,7 +7,7 @@ from plone.testing.z2 import Browser
 from collective.stripe.utils import get_settings
 from collective.stripe.testing import FUNCTIONAL_TESTING
 
-class TemplateFunctionalTest(unittest.TestCase):
+class ControlPanelFunctionalTest(unittest.TestCase):
     # The layer's setup will run once before all of these tests run,
     # and its teardown will run once after all these tests run.
     layer = FUNCTIONAL_TESTING
