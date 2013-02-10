@@ -33,9 +33,11 @@ class IStripeUtility(Interface):
 class StripeUtility(object):
     grok.implements(IStripeUtility)
 
-    def get_stripe_api(self):
+    def get_stripe_api(self, context=None):
         settings = get_settings()
-        if settings.mode == "live":
+        mode = self.get_mode_for_context(context)
+
+        if mode == "live":
             stripe.api_key = settings.live_secret_key
         else:
             stripe.api_key = settings.test_secret_key
@@ -46,9 +48,10 @@ class StripeUtility(object):
             return context.get_stripe_mode()
         return get_settings().mode
 
-    def charge_card(self, token, amount, description, **kwargs):
+    def charge_card(self, token, amount, description, context=None, **kwargs):
         settings = get_settings()
-        stripe = self.get_stripe_api()
+        stripe = self.get_stripe_api(context=context)
+
         res = stripe.Charge.create(
             amount = amount,
             currency = settings.currency,
@@ -58,9 +61,10 @@ class StripeUtility(object):
         )
         return res
 
-    def charge_customer(self, customer_id, amount, description, **kwargs):
+    def charge_customer(self, customer_id, amount, description, context=None, **kwargs):
         settings = get_settings()
-        stripe = self.get_stripe_api()
+        stripe = self.get_stripe_api(context=context)
+
         res = stripe.Charge.create(
             amount = amount,
             currency = settings.currency,
@@ -70,9 +74,10 @@ class StripeUtility(object):
         )
         return res
 
-    def create_customer(self, token, description, **kwargs):
+    def create_customer(self, token, description, context=None, **kwargs):
         settings = get_settings()
-        stripe = self.get_stripe_api()
+        stripe = self.get_stripe_api(context=context)
+
         res = stripe.Customer.create(
             card = token,
             description = description,
@@ -80,9 +85,10 @@ class StripeUtility(object):
         )
         return res
 
-    def subscribe_customer(self, customer_id, plan, quantity, **kwargs):
+    def subscribe_customer(self, customer_id, plan, quantity, context=None, **kwargs):
         settings = get_settings()
-        stripe = self.get_stripe_api()
+        stripe = self.get_stripe_api(context=context)
+
         cu = stripe.Customer.retrieve(customer_id)
         res = cu.update_subscription(
             plan=plan, 
