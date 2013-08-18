@@ -1,7 +1,10 @@
+from five import grok
+
 from z3c.form import interfaces
 
 from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from zope.schema.interfaces import IVocabularyFactory
 from zope.interface import Interface
 
 from plone.app.registry.browser import controlpanel
@@ -10,6 +13,11 @@ MODE_VOCABULARY = SimpleVocabulary((
     SimpleTerm(value="live", title=u"Live (Production Mode)"),
     SimpleTerm(value="test", title=u"Test (Test Mode, no transactions really go through, be careful)"),
 ))
+class StripeModesVocabulary(object):
+    grok.implements(IVocabularyFactory)
+    def __call__(self, context):
+        return MODE_VOCABULARY
+grok.global_utility(StripeModesVocabulary, name=u"collective.stripe.modes")
 
 CURRENCY_VOCABULARY = SimpleVocabulary((
     SimpleTerm(value="usd", title=u"USD - $"),

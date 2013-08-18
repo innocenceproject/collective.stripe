@@ -34,8 +34,11 @@ class StripeUtility(object):
     grok.implements(IStripeUtility)
 
     def get_stripe_api(self, context=None):
-        if context is not None:
-            mode = self.get_mode_for_context
+        settings = get_settings()
+        mode = self.get_mode_for_context(context)
+
+        if mode == "live":
+            stripe.api_key = settings.live_secret_key
         else:
             settings = get_settings()
             mode = settings.mode
@@ -50,7 +53,8 @@ class StripeUtility(object):
 
     def charge_card(self, token, amount, description, context=None, **kwargs):
         settings = get_settings()
-        stripe = self.get_stripe_api()
+        stripe = self.get_stripe_api(context=context)
+
         res = stripe.Charge.create(
             amount = amount,
             currency = settings.currency,
@@ -62,7 +66,8 @@ class StripeUtility(object):
 
     def charge_customer(self, customer_id, amount, description, context=None, **kwargs):
         settings = get_settings()
-        stripe = self.get_stripe_api()
+        stripe = self.get_stripe_api(context=context)
+
         res = stripe.Charge.create(
             amount = amount,
             currency = settings.currency,
@@ -74,7 +79,8 @@ class StripeUtility(object):
 
     def create_customer(self, token, description, context=None, **kwargs):
         settings = get_settings()
-        stripe = self.get_stripe_api()
+        stripe = self.get_stripe_api(context=context)
+
         res = stripe.Customer.create(
             card = token,
             description = description,
@@ -84,7 +90,8 @@ class StripeUtility(object):
 
     def subscribe_customer(self, customer_id, plan, quantity, context=None, **kwargs):
         settings = get_settings()
-        stripe = self.get_stripe_api()
+        stripe = self.get_stripe_api(context=context)
+
         cu = stripe.Customer.retrieve(customer_id)
         res = cu.update_subscription(
             plan=plan, 
