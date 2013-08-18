@@ -45,7 +45,6 @@ class ControlPanelFunctionalTest(unittest.TestCase):
         browser.getControl(name='form.widgets.test_secret_key').value = "qwertyuiop"
         browser.getControl(name='form.widgets.test_publishable_key').value = "poiuytrewq"
         browser.getControl(name='form.buttons.save').click()
-        self.assertEqual("http://nohost/plone/plone_control_panel", browser.url)
 
         # Check that the settings were changed in the registry
         settings = get_settings()
