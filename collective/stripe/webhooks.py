@@ -101,9 +101,13 @@ class StripeWebhooksView(grok.View):
     unverified = ['ping',]
 
     def render(self):
-        event_json = json.loads(self.request.body)
+        event_json = json.loads(self.request.get('BODY'))
         stripe_util = getUtility(IStripeUtility)
-        stripe_api = stripe_util.get_stripe_api()
+   
+        mode = 'live'
+        if event_json['livemode'] == False:
+            mode = 'test' 
+        stripe_api = stripe_util.get_stripe_api(mode=mode)
 
         # Make sure we have a mapping for the event
         event_class = EVENTS_MAP[event_json['type']]

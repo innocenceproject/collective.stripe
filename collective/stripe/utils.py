@@ -33,17 +33,21 @@ class IStripeUtility(Interface):
 class StripeUtility(object):
     grok.implements(IStripeUtility)
 
-    def get_stripe_api(self, context=None):
+    def get_stripe_api(self, context=None, mode=None):
+        active_mode = 'live'
         settings = get_settings()
-        mode = self.get_mode_for_context(context)
 
-        if mode == "live":
-            stripe.api_key = settings.live_secret_key
+        if mode is not None:
+            active_mode = mode
         else:
-            settings = get_settings()
-            mode = settings.mode
+            active_mode = 'live'
+            if settings.mode is not None:
+                active_mode == settings.mode
 
-        stripe.api_key = getattr(settings, '%s_secret_key' % mode)
+            if active_mode != 'test' and context is not None:
+                active_mode = self.get_mode_for_context(context)
+
+        stripe.api_key = getattr(settings, '%s_secret_key' % active_mode)
         return stripe
 
     def get_mode_for_context(self, context):
