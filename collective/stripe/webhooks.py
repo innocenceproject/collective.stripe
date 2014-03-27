@@ -61,7 +61,7 @@ EVENTS_MAP = {
     'charge.dispute.updated': IChargeDisputeUpdatedEvent,
     'charge.dispute.closed': IChargeDisputeClosedEvent,
     'customer.created': ICustomerCreatedEvent,
-    'customer.updted': ICustomerUpdatedEvent,
+    'customer.updated': ICustomerUpdatedEvent,
     'customer.deleted': ICustomerDeletedEvent,
     'customer.card.created': ICustomerCardCreatedEvent,
     'customer.card.updated': ICustomerCardUpdatedEvent,
