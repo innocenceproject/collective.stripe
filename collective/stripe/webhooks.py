@@ -96,22 +96,22 @@ class StripeWebhooksView(grok.View):
     grok.name('stripe-webhooks')
     grok.require('zope2.Public')
     grok.context(IPloneSiteRoot)
-       
-    # These events will not be verified by an API callback 
+
+    # These events will not be verified by an API callback
     unverified = ['ping',]
 
     def render(self):
         event_json = json.loads(self.request.get('BODY'))
         stripe_util = getUtility(IStripeUtility)
-   
+
         mode = 'live'
         if event_json['livemode'] == False:
-            mode = 'test' 
+            mode = 'test'
         stripe_api = stripe_util.get_stripe_api(mode=mode)
 
         # Make sure we have a mapping for the event
         event_class = EVENTS_MAP[event_json['type']]
-        
+
         # Fetch the event to verify authenticity, unless it is in the unverified list
         if event_json['type'] in self.unverified:
             data = event_json
@@ -129,5 +129,5 @@ class StripeWebhooksView(grok.View):
         # Send the event with data
         event = event_class(data)
         notify(event)
- 
+
         return 'OK'
