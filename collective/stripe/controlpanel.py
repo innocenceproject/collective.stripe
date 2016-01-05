@@ -31,6 +31,11 @@ class IStripeSettings(Interface):
         vocabulary=MODE_VOCABULARY,
         default=u"test",
     )
+    api_version = schema.TextLine(
+        title=u"API Version",
+        description=u"If no version is specified, '2015-10-16' will be used",
+        default=u"2015-10-16",
+    )
     test_secret_key = schema.TextLine(
         title=u"Test Secret Key",
         description=u"Located under Account Settings -> API Keys when logged into stripe.com",

@@ -48,6 +48,7 @@ class StripeUtility(object):
                 active_mode = self.get_mode_for_context(context)
 
         stripe.api_key = getattr(settings, '%s_secret_key' % active_mode)
+        stripe.api_version = settings.api_version
         return stripe
 
     def get_mode_for_context(self, context):
